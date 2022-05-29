@@ -68,6 +68,7 @@ H0 <- z(3.64, 0, 1.67, 19)
 H1 <- z(2.79, 0, 1.32, 27)
 ```
 Output
+
 ![image](https://user-images.githubusercontent.com/88977654/170879304-23a4f9be-d0d9-4e1b-8d1a-a1a315083501.png)
 
 ### 3b = Hitung Sampel Statistik
@@ -75,6 +76,7 @@ Output
 tsum.test(mean.x=3.64, s.x = 1.67, n.x = 19, mean.y =2.79 , s.y = 1.32, n.y = 27, alternative = "greater", var.equal = TRUE)
 ```
 Output
+
 ![image](https://user-images.githubusercontent.com/88977654/170879696-e2862c37-35aa-4caa-bd15-611c50977704.png)
 
 ### 3c = Lakukan Uji Statistik (df =2)
@@ -82,6 +84,7 @@ Output
 plotDist(dist='t', df=2, col="blue"
 ```
 Output
+
 ![image](https://user-images.githubusercontent.com/88977654/170879766-09585c3a-e582-4058-b455-fd9c0810ef39.png)
 
 ### 3d = Nilai Kritikal
@@ -89,6 +92,7 @@ Output
 qchisq(p = 0.05, df = 2, lower.tail=FALSE)
 ```
 Output
+
 ![image](https://user-images.githubusercontent.com/88977654/170879808-b7d29375-7203-4977-a4e2-21aacca2f754.png)
 
 ### 3e = Keputusan
@@ -204,7 +208,9 @@ print("Uji Tukey:")
 tukey <- TukeyHSD(anova)
 print(tukey)
 ```
+
 Output
+
 ![image](https://user-images.githubusercontent.com/88977654/170881656-fb897799-69a1-4a0e-bb52-b9a665a11374.png)
 
 ### 5e = Gunakan compact letter display untuk menunjukkan perbedaan signifikan antara uji Anova dan uji Tukey
@@ -214,5 +220,6 @@ tukey.cld <- multcompLetters4(anova, tukey)
 print(tukey.cld)
 ```
 Output
+
 ![image](https://user-images.githubusercontent.com/88977654/170881682-12ba348e-23e9-4242-b1f4-8d61a5885233.png)
 
