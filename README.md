@@ -107,12 +107,57 @@ H0 : Tidak ada perbedaan panjang antara ketiga spesies atau rata-rata panjangnya
 sama
 Maka Kerjakan atau Carilah:
 ### 4a = Buatlah masing masing jenis spesies menjadi 3 subjek "Grup"
-### 4b = Carilah atau periksalah Homogeneity of variances nya
-### 4c = Untuk uji ANOVA (satu arah), buatlah model linier dengan Panjang versus Grup
-### 4d = Dari Hasil Poin C, Berapakah nilai-p ? , Apa yang dapat Anda simpulkan dari H0?
-### 4e = Verifikasilah jawaban model 1 dengan Post-hoc test Tukey HSD
-### 4f = Visualisasikan data dengan ggplot2
+```r
+myFile  <- read.table(url("https://rstatisticsandresearch.weebly.com/uploads/1/0/2/6/1026585/onewayanova.txt"))
+dim(myFile)
+head(myFile)
+attach(myFile)
 
+myFile$V1 <- as.factor(myFile$V1)
+myFile$V1 = factor(myFile$V1,labels = c("Kucing Oren","Kucing Hitam","Kucing Putih","Kucing Oren"))
+
+class(myFile$V1)
+
+group1 <- subset(myFile, V1=="Kucing Oren")
+group2 <- subset(myFile, V1=="Kucing Hitam")
+group3 <- subset(myFile, V1=="Kucing Putih")
+```
+Output
+Normal Q-Q Plot Group 1
+![image](https://user-images.githubusercontent.com/88977654/170881395-74f6a4eb-e09f-4e2d-a937-53a786b30e4f.png)
+Normal Q-Q Plot Group 2
+![image](https://user-images.githubusercontent.com/88977654/170881414-8ccf8792-de57-4b6c-87e2-10471a6d3dc6.png)
+
+Normal Q-Q Plot Group 3
+### 4b = Carilah atau periksalah Homogeneity of variances nya
+```r
+bartlett.test(Length~V1, data=dataoneway)
+```
+
+### 4c = Untuk uji ANOVA (satu arah), buatlah model linier dengan Panjang versus Grup
+```r
+qqnorm(group1$Length)
+qqline(group1$Length)
+```
+### 4d = Dari Hasil Poin C, Berapakah nilai-p ? , Apa yang dapat Anda simpulkan dari H0?
+nilai p adalah 0.0013 dimana kurang dari 0.005, sehingga h0 ditolak
+
+### 4e = Verifikasilah jawaban model 1 dengan Post-hoc test Tukey HSD
+```r
+model1 <- lm(Length~Group, data=myFile)
+
+anova(model1)
+
+TukeyHSD(aov(model1))
+```
+### 4f = Visualisasikan data dengan ggplot2
+```r
+library(ggplot2)
+
+ggplot(dataoneway, aes(x = Group, y = Length)) + geom_boxplot(fill = "grey80", colour = "black") + 
+  scale_x_discrete() + xlab("Treatment Group") +  ylab("Length (cm)")
+
+```
 ## Soal 5
 Data yang digunakan merupakan hasil eksperimen yang dilakukan untuk
 mengetahui pengaruh suhu operasi (100˚C, 125˚C dan 150˚C) dan tiga jenis kaca
@@ -120,7 +165,54 @@ pelat muka (A, B dan C) pada keluaran cahaya tabung osiloskop. Percobaan
 dilakukan sebanyak 27 kali dan didapat data sebagai berikut: Data Hasil
 Eksperimen. Dengan data tersebut:
 ### 5a = Buatlah plot sederhana untuk visualisasi data
+```r
+library(readr)
+library(ggplot2)
+library(multcompView)
+library(dplyr)
+
+GTL <- read_csv("GTL.csv")
+head(GTL)
+
+qplot(x = Temp, y = Light, geom = "point", data = GTL) +
+  facet_grid(.~Glass, labeller = label_both)
+
+# variabel untuk anova
+GTL$Glass <- as.factor(GTL$Glass)
+GTL$Temp_Factor <- as.factor(GTL$Temp)
+str(GTL)
+```
+Sehingga outputnya menampilkan sebuah plot sederhana
+![image](https://user-images.githubusercontent.com/88977654/170881572-2fcf77cf-558d-424b-99a9-b10339d845e1.png)
+
 ### 5b = Lakukan uji ANOVA dua arah
+```r
+anova <- aov(Light ~ Glass*Temp_Factor, data = GTL)
+summary(anova)
+```
+
 ### 5c = Tampilkan tabel dengan mean dan standar deviasi keluaran cahaya untuk setiap perlakuan
+```r
+data_summary <- group_by(GTL, Glass, Temp) %>%
+  summarise(mean=mean(Light), sd=sd(Light)) %>%
+  arrange(desc(mean))
+print(data_summary)
+```
 ### 5d = Lakukan uji Tukey
+```r
+print("Uji Tukey:")
+tukey <- TukeyHSD(anova)
+print(tukey)
+```
+Output
+![image](https://user-images.githubusercontent.com/88977654/170881656-fb897799-69a1-4a0e-bb52-b9a665a11374.png)
+
 ### 5e = Gunakan compact letter display untuk menunjukkan perbedaan signifikan antara uji Anova dan uji Tukey
+```r
+print("Compact Letter Display:")
+tukey.cld <- multcompLetters4(anova, tukey)
+print(tukey.cld)
+```
+Output
+![image](https://user-images.githubusercontent.com/88977654/170881682-12ba348e-23e9-4242-b1f4-8d61a5885233.png)
+
